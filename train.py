@@ -61,7 +61,7 @@ def train():
             loss_d_epoch = loss_d_epoch/len(dataloader)
             print(
                 f'loss_y: {loss_y_epoch:>7f}  loss_d: {loss_d_epoch:>7f}  epoch: {epoch}')
-            if(epoch % 500 == 0):
+            if(epoch in config.LEARNING_STEP):
                 scheduler.step()
         torch.save(dann.state_dict(),
                    f'weight/{target_subject}.pth')
