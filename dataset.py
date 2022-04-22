@@ -37,4 +37,9 @@ class SEEDDataset(Dataset):
 
             return data, one_hot_label, one_hot_subject_index
         else:
-            return self.data[self.target_subject]['data'], self.data[self.target_subject]['label']
+            data = self.data[self.target_subject]['data'][index]
+            label = self.data[self.target_subject]['label'][index]
+
+            one_hot_label = torch.zeros(config.OUTPUT_SIZE)
+            one_hot_label[int(label+1)] = 1
+            return data, one_hot_label

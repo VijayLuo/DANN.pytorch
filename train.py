@@ -24,14 +24,10 @@ def train():
         dataloader = DataLoader(
             dataset, config.BATCH_SIZE, shuffle=True)
 
-        dann = DANN(alpha=config.ALPHA).to(device)
-        model = dann
-
-        if(torch.cuda.is_available()):
-            model = torch.nn.DataParallel(dann)
+        model = DANN(alpha=config.ALPHA).to(device)
 
         print('Initializing weights...')
-        dann.apply(weights_init)
+        model.apply(weights_init)
 
         loss_label = nn.CrossEntropyLoss()
         loss_subject = nn.CrossEntropyLoss()

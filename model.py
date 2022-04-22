@@ -47,7 +47,7 @@ class DANN(nn.Module):
         label = self.label_predictor(feature)
 
         if self.training:
-            # feature = GRL.apply(feature, self.alpha)
+            feature = GRL.apply(feature, self.alpha)
             domain = self.domain_predictor(feature)
             return label, domain
         else:
