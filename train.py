@@ -22,13 +22,11 @@ def train():
         print(f'target subject: {target_subject}')
         dataset = SEEDDataset(target_subject, train=True)
         dataloader = DataLoader(
-            dataset, config.BATCH_SIZE, shuffle=True, num_workers=8)
+            dataset, config.BATCH_SIZE, shuffle=True)
 
         dann = DANN(alpha=config.BETA)
         model = dann
 
-        if(torch.cuda.is_available()):
-            model = torch.nn.DataParallel(dann)
 
         print('Initializing weights...')
         model.apply(weights_init)

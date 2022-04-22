@@ -8,7 +8,7 @@ SUBJECTS_NAME = ['sub_0', 'sub_1', 'sub_2', 'sub_3', 'sub_4']
 
 DATA_NUMBER_OF_SUBJECT = 3397
 
-EPOCH = 400
+EPOCH = 1000
 
 BATCH_SIZE = 32
 
