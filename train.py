@@ -2,6 +2,7 @@ import torch
 import config
 from torch.utils.data import DataLoader
 from torch.optim import Adam
+from torch.optim.lr_scheduler import ExponentialLR
 from torch.nn import init
 from torch import nn
 from model import DANN
@@ -27,7 +28,6 @@ def train():
         dann = DANN(alpha=config.BETA)
         model = dann
 
-
         print('Initializing weights...')
         model.apply(weights_init)
 
@@ -36,6 +36,7 @@ def train():
         loss_label = nn.CrossEntropyLoss()
         loss_subject = nn.CrossEntropyLoss()
         optimizer = Adam(model.parameters(), lr=config.LEARNING_RATE)
+        scheduler = ExponentialLR(optimizer, config.GAMMA)
 
         model.train()
         for epoch in range(config.EPOCH):
@@ -60,6 +61,8 @@ def train():
             loss_d_epoch = loss_d_epoch/len(dataloader)
             print(
                 f'loss_y: {loss_y_epoch:>7f}  loss_d: {loss_d_epoch:>7f}  epoch: {epoch}')
+            if(epoch % 500 == 0):
+                scheduler.step()
         torch.save(dann.state_dict(),
                    f'weight/{target_subject}.pth')
         print(f'Saved model state to {target_subject}.pth')

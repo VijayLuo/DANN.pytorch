@@ -17,3 +17,5 @@ ALPHA = 0.1
 BETA = 0.1
 
 LEARNING_RATE = 1e-6
+
+GAMMA = 0.1
