@@ -24,7 +24,7 @@ def train():
         dataloader = DataLoader(
             dataset, config.BATCH_SIZE, shuffle=True)
 
-        model = DANN(alpha=config.ALPHA).to(device)
+        model = DANN(alpha=config.BETA).to(device)
 
         print('Initializing weights...')
         model.apply(weights_init)
@@ -41,14 +41,13 @@ def train():
                 X, label, subject = X.to(device), label.to(
                     device), subject.to(device)
                 pred_label, pred_subject = model(X)
-
                 loss_y = loss_label(pred_label, label)
                 loss_d = loss_subject(pred_subject, subject)
 
                 loss_y_epoch += loss_y.item()
                 loss_d_epoch += loss_d.item()
 
-                loss = loss_y + loss_d
+                loss = loss_y + config.ALPHA * loss_d
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
