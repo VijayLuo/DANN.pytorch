@@ -22,12 +22,18 @@ def train():
         print(f'target subject: {target_subject}')
         dataset = SEEDDataset(target_subject, train=True)
         dataloader = DataLoader(
-            dataset, config.BATCH_SIZE, shuffle=True)
+            dataset, config.BATCH_SIZE, shuffle=True, num_workers=8)
 
-        model = DANN(alpha=config.BETA).to(device)
+        dann = DANN(alpha=config.BETA)
+        model = dann
+
+        if(torch.cuda.is_available()):
+            model = torch.nn.DataParallel(dann)
 
         print('Initializing weights...')
         model.apply(weights_init)
+
+        model.to(device)
 
         loss_label = nn.CrossEntropyLoss()
         loss_subject = nn.CrossEntropyLoss()
@@ -56,7 +62,7 @@ def train():
             loss_d_epoch = loss_d_epoch/len(dataloader)
             print(
                 f'loss_y: {loss_y_epoch:>7f}  loss_d: {loss_d_epoch:>7f}  epoch: {epoch}')
-        torch.save(model.state_dict(),
+        torch.save(dann.state_dict(),
                    f'weight/{target_subject}.pth')
         print(f'Saved model state to {target_subject}.pth')
 
