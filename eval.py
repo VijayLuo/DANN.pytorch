@@ -17,8 +17,9 @@ def eval():
             dataset, config.BATCH_SIZE, shuffle=True)
 
         model = DANN(alpha=config.ALPHA).to(device)
-        model.load_state_dict(torch.load(f'weight/{target_subject}.pth'))
-        
+        model.load_state_dict(torch.load(
+            f'weight/{target_subject}.pth', map_location='cpu'))
+
         loss_label = nn.CrossEntropyLoss()
         test_loss, correct = 0, 0
 
@@ -29,11 +30,11 @@ def eval():
                 pred = model(X)
                 test_loss += loss_label(pred, label).item()
 
-                print(pred)
-                print(label)
-                quit()
-                correct += (pred.argmax(1) ==
-                            label).type(torch.float).sum().item()
+                correct += (label.argmax(1) == pred.argmax(
+                    1)).type(torch.float).sum().item()
+
+        print(correct/config.DATA_NUMBER_OF_SUBJECT)
+        print(test_loss/config.DATA_NUMBER_OF_SUBJECT)
 
 
 if __name__ == '__main__':
