@@ -21,7 +21,7 @@ LEARNING_RATE = 1e-5
 SWEEP_CONFIG = {
     'name': 'dann',
     'metric': {'name': 'mean_accuracy', 'goal': 'maximize'},
-    'method': 'bayes',
+    'method': 'grid',
     'parameters': {
         'epoch': {
             'values': [300, 400, 500, 600]
