@@ -59,8 +59,8 @@ def train():
             if(epoch in config.LEARNING_STEP):
                 scheduler.step()
         torch.save(dann.state_dict(),
-                   f'weight/{target_subject}.pth')
-        print(f'Saved model state to {target_subject}.pth')
+                   f'weight/dann_{target_subject}.pth')
+        print(f'Saved model state to weight/dann_{target_subject}.pth')
 
 
 if __name__ == '__main__':
