@@ -5,6 +5,7 @@ from dataset import SEEDDataset
 from torch.utils.data import DataLoader
 from torch import nn
 import numpy as np
+import wandb
 
 torch.set_default_dtype(torch.float64)
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -65,6 +66,7 @@ def eval():
 
     print(
         f'Fully Connected Model Average Accuracy: {(100*np.mean(accuracy_fc_list)):>0.1f}%')
+    wandb.log({'mean_accuracy': np.mean(accuracy_dann_list)})
 
 
 if __name__ == '__main__':
