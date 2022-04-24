@@ -4,12 +4,35 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ExponentialLR
 from torch import nn
-from model import DANN
-from dataset import SEEDDataset
 from util import weights_init
+from dataset import SEEDDataset
 
 torch.set_default_dtype(torch.float64)
 device = "cuda" if torch.cuda.is_available() else "cpu"
+
+
+class FCModel(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.feature_extractor = nn.Sequential(
+            nn.Linear(config.INPUT_SIZE, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+        )
+        self.label_predictor = nn.Sequential(
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, config.OUTPUT_SIZE),
+            nn.Softmax(dim=1),
+        )
+
+    def forward(self, x):
+        feature = self.feature_extractor(x)
+        label = self.label_predictor(feature)
+        return label
 
 
 def train():
@@ -19,8 +42,8 @@ def train():
         dataloader = DataLoader(
             dataset, config.BATCH_SIZE, shuffle=True)
 
-        dann = DANN(alpha=config.BETA)
-        model = dann
+        linear_model = FCModel()
+        model = linear_model
 
         print('Initializing weights...')
         model.apply(weights_init)
@@ -28,39 +51,34 @@ def train():
         model.to(device)
 
         loss_label = nn.CrossEntropyLoss()
-        loss_subject = nn.CrossEntropyLoss()
         optimizer = Adam(model.parameters(), lr=config.LEARNING_RATE)
         scheduler = ExponentialLR(optimizer, config.GAMMA)
 
         model.train()
         for epoch in range(config.EPOCH):
             loss_y_epoch = 0
-            loss_d_epoch = 0
             for batch, (X, label, subject) in enumerate(dataloader):
-                X, label, subject = X.to(device), label.to(
-                    device), subject.to(device)
-                pred_label, pred_subject = model(X)
+                X, label = X.to(device), label.to(
+                    device)
+                pred_label = model(X)
                 loss_y = loss_label(pred_label, label)
-                loss_d = loss_subject(pred_subject, subject)
 
                 loss_y_epoch += loss_y.item()
-                loss_d_epoch += loss_d.item()
 
-                loss = loss_y + config.ALPHA * loss_d
+                loss = loss_y
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
 
             loss_y_epoch = loss_y_epoch/len(dataloader)
-            loss_d_epoch = loss_d_epoch/len(dataloader)
             if(epoch % 10 == 0):
                 print(
-                    f'loss_y: {loss_y_epoch:>7f}  loss_d: {loss_d_epoch:>7f}  epoch: {epoch}')
+                    f'loss_y: {loss_y_epoch:>7f} epoch: {epoch}')
             if(epoch in config.LEARNING_STEP):
                 scheduler.step()
-        torch.save(dann.state_dict(),
-                   f'weight/{target_subject}.pth')
-        print(f'Saved model state to {target_subject}.pth')
+        torch.save(linear_model.state_dict(),
+                   f'weight/linear_model_{target_subject}.pth')
+        print(f'Saved model state to linear_model_{target_subject}.pth')
 
 
 if __name__ == '__main__':
