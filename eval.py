@@ -22,11 +22,11 @@ def eval():
 
         dann = DANN(alpha=config.ALPHA).to(device)
         dann.load_state_dict(torch.load(
-            f'weight/dann_{target_subject}.pth', map_location='cpu'))
+            f'weight/dann_{target_subject}.pth'))
 
         fc = FCModel().to(device)
         fc.load_state_dict(torch.load(
-            f'weight/fc_{target_subject}.pth', map_location='cpu'))
+            f'weight/fc_{target_subject}.pth'))
 
         loss_label = nn.CrossEntropyLoss()
         test_loss_dann, correct_dann = 0, 0
@@ -37,6 +37,7 @@ def eval():
 
         with torch.no_grad():
             for X, label in dataloader:
+                X, label = X.to(device), label.to(device)
                 pred_dann = dann(X)
                 test_loss_dann += loss_label(pred_dann, label).item()
 
