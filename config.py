@@ -24,10 +24,14 @@ SWEEP_CONFIG = {
     'method': 'bayes',
     'parameters': {
         'alpha': {
-            'values': [0.1, 0.3, 0.6, 0.9]
+            'min': 0.1,
+            'max': 1,
+            'distribution': 'uniform',
         },
         'beta': {
-            'values': [0.1, 0.3, 0.6, 0.9]
+            'min': 0.1,
+            'max': 1,
+            'distribution': 'uniform',
         },
     }
 }

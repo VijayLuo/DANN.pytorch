@@ -71,4 +71,4 @@ def train():
 
 
 if __name__ == '__main__':
-    train()
+    wandb.agent('', train, entity='vj', project='dann')
