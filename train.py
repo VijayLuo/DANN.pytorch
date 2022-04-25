@@ -20,7 +20,7 @@ def train():
         print(f'target subject: {target_subject}')
         dataset = SEEDDataset(target_subject, train=True)
         dataloader = DataLoader(
-            dataset, cfg.batch_size, shuffle=True)
+            dataset, config.BATCH_SIZE, shuffle=True)
 
         dann = DANN(alpha=cfg.beta)
         model = dann
@@ -32,10 +32,10 @@ def train():
 
         loss_label = nn.CrossEntropyLoss()
         loss_subject = nn.CrossEntropyLoss()
-        optimizer = Adam(model.parameters(), lr=cfg.learning_rate)
+        optimizer = Adam(model.parameters(), lr=config.LEARNING_RATE)
 
         model.train()
-        for epoch in range(cfg.epoch):
+        for epoch in range(config.EPOCH):
             loss_y_epoch = 0
             loss_d_epoch = 0
             for batch, (X, label, subject) in enumerate(dataloader):
