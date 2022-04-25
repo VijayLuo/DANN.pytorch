@@ -12,14 +12,19 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def eval():
+    """对DANN模型与FC模型进行评估，
+    输出每个subject作为target subject的准确率及其mean
+    """
     accuracy_fc_list = []
     accuracy_dann_list = []
     for target_subject in config.SUBJECTS_NAME:
         print(f'target subject: {target_subject}')
+        # 载入SEED数据库
         dataset = SEEDDataset(target_subject, train=False)
         dataloader = DataLoader(
             dataset, config.BATCH_SIZE, shuffle=True)
 
+        # 加载模块weight
         dann = DANN(alpha=config.ALPHA).to(device)
         dann.load_state_dict(torch.load(
             f'weight/dann_{target_subject}.pth'))
@@ -43,13 +48,13 @@ def eval():
 
                 correct_dann += (label.argmax(1) == pred_dann.argmax(
                     1)).type(torch.float).sum().item()
-
+                # 预测结果
                 pred_fc = fc(X)
-                test_loss_fc += loss_label(pred_fc, label).item()
 
+                test_loss_fc += loss_label(pred_fc, label).item()
                 correct_fc += (label.argmax(1) == pred_fc.argmax(
                     1)).type(torch.float).sum().item()
-
+        # 计算准确率以及test_loss
         accuracy_dann = correct_dann/config.DATA_NUMBER_OF_SUBJECT
         accuracy_dann_list.append(accuracy_dann)
         test_loss_dann /= len(dataloader)

@@ -2,7 +2,6 @@ import torch
 import config
 from torch.utils.data import DataLoader
 from torch.optim import Adam
-from torch.optim.lr_scheduler import ExponentialLR
 from torch import nn
 from util import weights_init
 from dataset import SEEDDataset
@@ -29,7 +28,6 @@ def train():
 
         loss_label = nn.CrossEntropyLoss()
         optimizer = Adam(model.parameters(), lr=config.LEARNING_RATE)
-        scheduler = ExponentialLR(optimizer, config.GAMMA)
 
         model.train()
         for epoch in range(config.EPOCH):
@@ -51,8 +49,6 @@ def train():
             if(epoch % 10 == 0):
                 print(
                     f'loss_y: {loss_y_epoch:>7f} epoch: {epoch}')
-            if(epoch in config.LEARNING_STEP):
-                scheduler.step()
         torch.save(linear_model.state_dict(),
                    f'weight/fc_{target_subject}.pth')
         print(f'Saved model state to fc_{target_subject}.pth')
