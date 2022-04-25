@@ -10,7 +10,7 @@ DATA_NUMBER_OF_SUBJECT = 3397
 
 EPOCH = 400
 
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 
 ALPHA = 1
 
@@ -24,14 +24,10 @@ SWEEP_CONFIG = {
     'method': 'bayes',
     'parameters': {
         'alpha': {
-            'min': 0.1,
-            'max': 1,
-            'distribution': 'uniform',
+            'values': [0.1, 0.3, 0.6, 0.9]
         },
         'beta': {
-            'min': 0.1,
-            'max': 1,
-            'distribution': 'uniform',
+            'values': [0.1, 0.3, 0.6, 0.9]
         },
     }
 }
